@@ -32,7 +32,7 @@ class MongoDB implements AuthorizationCodeInterface,
 
     public function __construct($connection, $config = array())
     {
-        if ($connection instanceof Database) {
+        if (1 || $connection instanceof Database) {
             $this->db = $connection;
         } else {
             if (!is_array($connection)) {
@@ -82,7 +82,7 @@ class MongoDB implements AuthorizationCodeInterface,
     public function setClientDetails($client_id, $client_secret = null, $redirect_uri = null, $grant_types = null, $scope = null, $user_id = null)
     {
         if ($this->getClientDetails($client_id)) {
-            $result = $this->collection('client_table')->updateOne(
+            $result = $this->collection('client_table')->update(
                 array('client_id' => $client_id),
                 array('$set' => array(
                     'client_secret' => $client_secret,
@@ -102,8 +102,8 @@ class MongoDB implements AuthorizationCodeInterface,
             'scope'         => $scope,
             'user_id'       => $user_id,
         );
-        $result = $this->collection('client_table')->insertOne($client);
-        return $result->getInsertedCount() > 0;
+        $result = $this->collection('client_table')->insert($client);
+        return $result['ok'];
     }
 
     public function checkRestrictedGrantType($client_id, $grant_type)
@@ -128,7 +128,7 @@ class MongoDB implements AuthorizationCodeInterface,
     {
         // if it exists, update it.
         if ($this->getAccessToken($access_token)) {
-            $result = $this->collection('access_token_table')->updateOne(
+            $result = $this->collection('access_token_table')->update(
                 array('access_token' => $access_token),
                 array('$set' => array(
                     'client_id' => $client_id,
@@ -146,13 +146,14 @@ class MongoDB implements AuthorizationCodeInterface,
             'user_id' => $user_id,
             'scope' => $scope
         );
-        $result = $this->collection('access_token_table')->insertOne($token);
-        return $result->getInsertedCount() > 0;
+        $result = $this->collection('access_token_table')->insert($token);
+
+        return $result['ok'];
     }
 
     public function unsetAccessToken($access_token)
     {
-        $result = $this->collection('access_token_table')->deleteOne(array(
+        $result = $this->collection('access_token_table')->delete(array(
             'access_token' => $access_token
         ));
         return $result->getDeletedCount() > 0;
@@ -171,7 +172,7 @@ class MongoDB implements AuthorizationCodeInterface,
     {
         // if it exists, update it.
         if ($this->getAuthorizationCode($code)) {
-            $result = $this->collection('code_table')->updateOne(
+            $result = $this->collection('code_table')->update(
                 array('authorization_code' => $code),
                 array('$set' => array(
                     'client_id' => $client_id,
@@ -193,13 +194,13 @@ class MongoDB implements AuthorizationCodeInterface,
             'scope' => $scope,
             'id_token' => $id_token,
         );
-        $result = $this->collection('code_table')->insertOne($token);
-        return $result->getInsertedCount() > 0;
+        $result = $this->collection('code_table')->insert($token);
+        return $result['ok'];
     }
 
     public function expireAuthorizationCode($code)
     {
-        $result = $this->collection('code_table')->deleteOne(array(
+        $result = $this->collection('code_table')->delete(array(
             'authorization_code' => $code
         ));
         return $result->getDeletedCount() > 0;
@@ -240,13 +241,13 @@ class MongoDB implements AuthorizationCodeInterface,
             'expires' => $expires,
             'scope' => $scope
         );
-        $result = $this->collection('refresh_token_table')->insertOne($token);
-        return $result->getInsertedCount() > 0;
+        $result = $this->collection('refresh_token_table')->insert($token);
+        return $result['ok'];
     }
 
     public function unsetRefreshToken($refresh_token)
     {
-        $result = $this->collection('refresh_token_table')->deleteOne(array(
+        $result = $this->collection('refresh_token_table')->delete(array(
             'refresh_token' => $refresh_token
         ));
         return $result->getDeletedCount() > 0;
@@ -267,7 +268,7 @@ class MongoDB implements AuthorizationCodeInterface,
     public function setUser($username, $password, $firstName = null, $lastName = null)
     {
         if ($this->getUser($username)) {
-            $result = $this->collection('user_table')->updateOne(
+            $result = $this->collection('user_table')->update(
                 array('username' => $username),
                 array('$set' => array(
                     'password' => $password,
@@ -285,8 +286,8 @@ class MongoDB implements AuthorizationCodeInterface,
             'first_name' => $firstName,
             'last_name' => $lastName
         );
-        $result = $this->collection('user_table')->insertOne($user);
-        return $result->getInsertedCount() > 0;
+        $result = $this->collection('user_table')->insert($user);
+        return $result['ok'];
     }
 
     public function getClientKey($client_id, $subject)
