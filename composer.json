@@ -1,5 +1,5 @@
 {
-    "name": "koponk04/oauth2-server-php",
+    "name": "koponk04/oauth2",
     "description":"OAuth2 Server for PHP",
     "keywords":["oauth","oauth2","auth"],
     "type":"library",
@@ -11,7 +11,7 @@
             "homepage":"http://brentertainment.com"
         }
     ],
-    "homepage": "http://github.com/koponk04/oauth2-server-php",
+    "homepage": "http://github.com/koponk04/oauth2",
     "autoload": {
         "psr-0": { "OAuth2": "src/" }
     },
